@@ -5,6 +5,10 @@ const toExecute = [
   {
     path: "vendetta/index.js",
     outputDir: "vendetta"
+  },
+  {
+    path: "vendetta/plugins.js",
+    outputDir: "vendetta"
   }
 ];
 
@@ -18,6 +22,12 @@ function saveOutput(path, str) {
   console.log(`Saved: ${fullPath}`);
 }
 
+function makeDir(path) {
+  const fullPath = `${DIST_DIR}/${path}`;
+  if (!existsSync(fullPath)) mkdirSync(fullPath, { recursive: true });
+  return fullPath;
+}
+
 (async () => {
   if (existsSync(DIST_DIR)) {
     console.log("Removing existing dist directory");
@@ -28,7 +38,8 @@ function saveOutput(path, str) {
   for (const data of toExecute) {
     console.log(`Executing: ${data.path}`);
     const ctx = {
-      saveOutput: (path, str) => saveOutput(`${data.outputDir}/${path}`, str)
+      saveOutput: (path, str) => saveOutput(`${data.outputDir}/${path}`, str),
+      makeDir: (path) => makeDir(`${data.outputDir}/${path}`)
     }
     
     const module = await import("./"+data.path);

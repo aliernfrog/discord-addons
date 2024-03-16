@@ -22,6 +22,14 @@ jobs:
 
       - name: Install dependencies
         run: npm i
+        
+      - name: Build Vendetta plugins
+        run: |
+          cd vendetta/plugins
+          rm -rf node_modules
+          npm i
+          node build.mjs
+          cd ../../
 
       - name: Build
         run: node build.js
