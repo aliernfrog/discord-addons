@@ -1,7 +1,9 @@
 import { findByName, findByProps } from "@vendetta/metro";
+import { ReactNative } from "@vendetta/metro/common";
 import { after, before } from "@vendetta/patcher";
 import { Forms } from "@vendetta/ui/components";
-import { findInReactTree } from "@vendetta/utils";
+
+const { View } = ReactNative;
 
 const { default: ChatItemWrapper } = findByProps(
   "DCDAutoModerationSystemMessageView",
@@ -19,18 +21,18 @@ const patch = before("openLazy", ActionSheet, ([comp, args, msg]) => {
     const unpatch = after("default", instance, (_, component) => {
       React.useEffect(() => () => { unpatch() }, []);
 
-      const children = findInReactTree(component, (c) => c?.type?.name === "ActionSheetContentContainer")?.props?.children;
+      const children = component.props?.children;
       if (!children) return;
-
+      
       children.unshift(
-        <ChatItemWrapper
+        <View
           style={{
-            paddingHorizontal: 14,
-            paddingTop: 14
-          }}
-          rowGenerator={new RowManager()}
-          message={new MessageRecord(message)}
-        />
+            paddingHorizontal: 12
+          }}>
+          <ChatItemWrapper
+            rowGenerator={new RowManager()}
+            message={new MessageRecord(message)}/>
+        </View>
       );
     });
   });
